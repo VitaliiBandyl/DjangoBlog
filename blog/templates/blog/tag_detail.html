@@ -7,7 +7,7 @@
 {% block content %}
     <h1 class="mb-5">Post with "{{ tag.title }}" tag:</h1>
 
-    {% for tag in tag.posts.all %}
+    {% for post in tag.posts.all %}
         {% include 'blog/includes/post_card_template.html' %}
     {% endfor %}
 
