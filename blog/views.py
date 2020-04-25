@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.generic import View
 
 from .models import Post, Tag
-from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin
+from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin, ObjectDeleteMixin
 from .forms import TagForm, PostForm
 
 
@@ -47,3 +47,9 @@ class TagUpdate(ObjectUpdateMixin, View):
     model = Tag
     model_form = TagForm
     template = 'blog/tag_update_form.html'
+
+
+class TagDelete(ObjectDeleteMixin, View):
+    model = Tag
+    template = 'blog/tag_delete_form.html'
+    redirect_url = 'tags_list_url'
