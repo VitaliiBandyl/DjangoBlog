@@ -1,16 +1,37 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.paginator import Paginator
 
 from .models import Post, Tag
 from .utils import ObjectDetailMixin, ObjectCreateMixin, ObjectUpdateMixin, ObjectDeleteMixin
 from .forms import TagForm, PostForm
 
 
-# Create your views here.
 def posts_list(request):
     posts = Post.objects.all()
-    return render(request, 'blog/index.html', context={'posts': posts})
+    paginator = Paginator(posts, 5)
+    page_number = request.GET.get('page', 1)
+    page = paginator.get_page(page_number)
+
+    is_paginated = page.has_other_pages()
+    if page.has_previous():
+        prev_page = f'?page={page.previous_page_number()}'
+    else:
+        prev_page = ''
+
+    if page.has_next():
+        next_page = f'?page={page.next_page_number()}'
+    else:
+        next_page = ''
+
+    context ={
+        'page_object': page,
+        'is_paginated': is_paginated,
+        'prev_page': prev_page,
+        'next_page': next_page
+    }
+    return render(request, 'blog/index.html', context=context)
 
 
 class PostDetail(ObjectDetailMixin, View):
