@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
+from .models import Post
 
 
 class ObjectDetailMixin:
@@ -63,3 +65,25 @@ class ObjectDeleteMixin:
         obj = self.model.objects.get(slug__iexact=slug)
         obj.delete()
         return redirect(reverse(self.redirect_url))
+
+
+def get_next_page(page):
+    if page.has_next():
+        next_page = f'?page={page.next_page_number()}'
+        return next_page
+
+
+def get_prev_page(page):
+    if page.has_previous():
+        prev_page = f'?page={page.previous_page_number()}'
+        return prev_page
+
+
+def get_posts(request):
+    search_query = request.GET.get('search', '')
+
+    if search_query:
+        posts = Post.objects.filter(Q(title__icontains=search_query) | Q(body__icontains=search_query))
+    else:
+        posts = Post.objects.all()
+    return posts
